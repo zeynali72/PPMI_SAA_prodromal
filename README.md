@@ -33,7 +33,7 @@ Place the downloaded files in a project folder as follows:
     ├── PPMI_Curated_Data_Cut_Public_20260511.xlsx
     ├── SAA_Biospecimen_Analysis_Results_29Jul2026.csv
     ├── Kinetic_data_for_SAA_Results_29Jul2026.csv
-    └── Blood_Chemistry___Hematology_13Sep2026.csv
+    └── Blood_Chemistry___Hematology_29Jul2026.csv
 ```
 
 The notebooks write to `results_baseline/` (notebook 01), `analysis/` (notebooks 02, 03 and 05) and `analysis_by_group/` (notebook 04) inside the same folder. If your downloads have different file names, change them in notebook 01 (and the blood chemistry file name in the configuration of notebook 04).

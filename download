@@ -1,0 +1,15 @@
+# PPMI data and anything derived from it must not be committed (PPMI Data Use Agreement)
+data/
+results_baseline/
+analysis/
+*.csv
+*.xlsx
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.env
+
+# OS
+.DS_Store

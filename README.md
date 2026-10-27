@@ -45,9 +45,6 @@ Set the project folder in the first code cell of each notebook (`BASE_DIR`), or 
 ```bash
 export PPMI_SAA_BASE=/path/to/project_folder
 ```
-
-In Colab, the notebooks mount Google Drive and use `/content/drive/MyDrive/PPMI_Projects/prodromal_SAA_groups` by default.
-
 Locally:
 
 ```bash

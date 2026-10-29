@@ -1,6 +1,8 @@
-# SAA status, SAA kinetics and clinical progression in prodromal PPMI participants
+# DAT status, SAA kinetics and clinical progression in prodromal PPMI participants
 
-Analysis code for linear mixed models of motor and cognitive progression in the PPMI prodromal cohort, by baseline CSF α-synuclein seed amplification assay (SAA) status and by baseline SAA kinetic parameters.
+Analysis code for linear mixed models of motor and cognitive progression in the PPMI prodromal cohort, by baseline dopamine transporter (DAT) imaging status and by baseline SAA kinetic parameters.
+
+This branch (`dat-groups`) is the same pipeline as `main`, with one change: participants are grouped by **baseline DAT status** instead of baseline SAA status. DAT-positive = abnormal dopaminergic imaging, i.e. visit-level DAT SBR status with an age/sex-expected DaT ratio < 0.75, taken from the curated BL row. SAA status and SAA kinetics are kept as descriptive columns; the kinetics analyses run in DAT-positive participants (instead of SAA-positive).
 
 ## Notebooks
 
@@ -8,11 +10,11 @@ Run in order. Each notebook is self-contained and works in Google Colab or local
 
 | Notebook | What it does |
 |---|---|
-| `notebooks/01_build_dataset.ipynb` | Builds a baseline-anchored analytic dataset from the PPMI curated data cut and the raw SAA files: one wide file (one row per participant) and one long file (one row per visit). SAA status comes from the curated `CSFSAA` field at baseline (codes 1 and 3 = positive, 0 = negative; inconclusive or missing excluded). Kinetics come from the baseline visit only. |
-| `notebooks/02_lmm_saa_status.ipynb` | `outcome ~ time × SAA status + covariates + (1 + time \| participant)`, SAA-negative as reference, in all prodromal participants. |
-| `notebooks/03_lmm_saa_kinetics.ipynb` | SAA-positive participants only. Same model with a median-split kinetic group (Fmax, TTT, AUC; Project 237, 24-hour assay) as the exposure. |
-| `notebooks/04_table1_baseline.ipynb` | Table 1: baseline characteristics of SAA-positive vs SAA-negative participants, including baseline serum uric acid, glucose and creatinine, prodromal subgroups and CSF SAA assay. Mann–Whitney U, χ², Fisher's exact or permutation χ²; Holm correction. |
-| `notebooks/05_survival_saa_kinetics.ipynb` | Phenoconversion-free survival: Kaplan–Meier curves and Cox models (adjusted for age and sex) by SAA status in all participants, and by median-split Fmax, TTT and AUC in SAA-positive participants. Event: PRIMDIAG = 1 or 5; prevalent cases and baseline-only participants excluded; censored at 12 years. |
+| `01_build_dataset.ipynb` | Builds a baseline-anchored analytic dataset from the PPMI curated data cut and the raw SAA files: one wide file (one row per participant) and one long file (one row per visit). DAT status comes from the curated DAT column (`DAT_COL`) on the BL row; participants without it are excluded. SAA status (curated `CSFSAA`, codes 1 and 3 = positive, 0 = negative) is kept, blank if inconclusive or missing. Kinetics come from the baseline visit only. |
+| `02_lmm_dat_status.ipynb` | `outcome ~ time × DAT status + covariates + (1 + time \| participant)`, DAT-negative as reference, in all prodromal participants. |
+| `03_lmm_saa_kinetics_dat_positive.ipynb` | DAT-positive participants only. Same model with a median-split kinetic group (Fmax, TTT, AUC; Project 237, 24-hour assay) as the exposure. |
+| `04_table1_baseline.ipynb` | Table 1: baseline characteristics of DAT-positive vs DAT-negative participants, including baseline serum uric acid, glucose and creatinine, prodromal subgroups and CSF SAA assay. Mann–Whitney U, χ², Fisher's exact or permutation χ²; Holm correction. |
+| `05_survival_dat_status_saa_kinetics.ipynb` | Phenoconversion-free survival: Kaplan–Meier curves and Cox models (adjusted for age and sex) by DAT status in all participants, and by median-split Fmax, TTT and AUC in DAT-positive participants. Event: PRIMDIAG = 1 or 5; prevalent cases and baseline-only participants excluded; censored at 12 years. |
 
 Notebooks 02 and 03 each run two analyses of phenoconversion during follow-up (PRIMDIAG = 1, idiopathic PD, or 5, DLB, at any visit):
 
@@ -36,7 +38,9 @@ Place the downloaded files in a project folder as follows:
     └── Blood_Chemistry___Hematology_29Jul2026.csv
 ```
 
-The notebooks write to `results_baseline/` (notebook 01), `analysis/` (notebooks 02, 03 and 05) and `analysis_by_group/` (notebook 04) inside the same folder. If your downloads have different file names, change them in notebook 01 (and the blood chemistry file name in the configuration of notebook 04).
+The notebooks write to `results_baseline_dat/` (notebook 01), `analysis_dat/` (notebooks 02, 03 and 05) and `analysis_by_group_dat/` (notebook 04) inside the same folder, so the SAA results of `main` are never overwritten and both versions can share one data folder.
+
+**DAT column.** Set `DAT_COL` in the configuration of notebook 01 to the curated column holding baseline DAT status (`DAT_MODE = 'status'`, codes `DAT_POSITIVE_CODES` / `DAT_NEGATIVE_CODES`, default 1 / 0), or to the numeric age/sex-expected ratio (`DAT_MODE = 'ratio'`, positive if < `DAT_RATIO_CUT` = 0.75). With `DAT_COL = None` the column is auto-detected only if exactly one DAT status column exists; otherwise the run stops and lists every DaT-related column so you can pick one. If your downloads have different file names, change them in notebook 01 (and the blood chemistry file name in the configuration of notebook 04).
 
 ## Running
 
@@ -49,7 +53,7 @@ Locally:
 
 ```bash
 pip install -r requirements.txt
-jupyter lab notebooks/
+jupyter lab
 ```
 
 All settings (outcomes, covariates, time window, kinetic parameters, multiple-testing method, figure options) are in the **Configuration** cell of each notebook.
